@@ -1,9 +1,10 @@
+const webpack = require('webpack')
 const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     mode: "development",
-    entry: './index.tsx',
+    entry: ['react-hot-loader/patch', './index.tsx'],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js'
@@ -11,7 +12,10 @@ module.exports = {
     devtool: "source-map",
 
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js', '.jsx'],
+        alias: {
+            'react-dom': '@hot-loader/react-dom',
+          },
     },
 
     module: {
@@ -29,7 +33,12 @@ module.exports = {
                 enforce: "pre",
                 test: /\.js$/,
                 loader: "source-map-loader"
-            }
+            },
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                loaders: ["babel-loader"]
+              }
         ]
     },
 
@@ -37,12 +46,12 @@ module.exports = {
         index: 'index.html',
         compress: true,
         port: 9000,
-        inline: false,
+        inline: true,
         contentBase: path.join(__dirname, 'dist'),
-        // hot: true,
+        hot: true,
     },
-
     plugins: [
+        new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: `./index.html`,
